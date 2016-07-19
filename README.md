@@ -40,7 +40,7 @@ config :airbax,
   environment: "production"
 ```
 
-If you're using Errbit, add to the config above an URL to your Errbit service as `url` parameter.  
+If you're using Errbit, add to the configuration above an URL of your Errbit service as `url` parameter.  
 
 Then, exceptions (errors, exits, and throws) can be reported to Airbrake or Errbit using `Airbax.report/3`:
 
@@ -55,7 +55,7 @@ end
 
 ### Plug and Phoenix
 
-For examples on how to take advantage of Airbax in Plug-based applications (including Phoenix applications), have a look at the Rollbax's documentation: ["Using Rollbax in Plug-based applications" page in the documentation](http://hexdocs.pm/rollbax/using-rollbax-in-plug-based-applications.html).  
+For examples on how to take advantage of Airbax in Plug-based applications (including Phoenix applications), have a look at the ["Using Airbax in Plug-based applications" page in the documentation](http://hexdocs.pm/airbax/using-airbax-in-plug-based-applications.html).  
 
 ### Non-production reporting
 

@@ -15,7 +15,8 @@ defmodule Airbax.Mixfile do
      name: "Airbax",
      docs: [main: "Airbax",
             source_ref: "v#{@version}",
-            source_url: "https://github.com/gaynetdinov/airbax"]]
+            source_url: "https://github.com/gaynetdinov/airbax",
+            extras: ["pages/Using Airbax in Plug-based applications.md"]]]
   end
 
   def application() do
