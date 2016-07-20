@@ -45,8 +45,12 @@ defmodule Airbax do
     * `:exit` - reports an exit; `value` can be any term
     * `:throw` - reports a thrown term; `value` can be any term
 
+  `kind` itself is not sent to the Airbrake/Errbit, it's only used to
+  properly parse `value`.
+
   The `params` and `session` arguments can be used to customize metadata
   sent to Airbrake.
+
   This function is *fire-and-forget*: it will always return `:ok` right away and
   perform the reporting of the given exception in the background.
 
