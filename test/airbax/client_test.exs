@@ -4,7 +4,7 @@ defmodule Airbax.ClientTest do
   alias Airbax.Client
 
   setup_all do
-    {:ok, pid} = start_airbax_client("project_key", "project_id", "test")
+    {:ok, pid} = start_airbax_client()
     on_exit(fn ->
       ensure_airbax_client_down(pid)
     end)
@@ -31,6 +31,15 @@ defmodule Airbax.ClientTest do
     for _ <- 1..60 do
       assert_receive {:api_request, _body}
     end
+  end
+
+  test "emit slow" do
+    :ok = Client.emit(:warn, %{},  %{sleep: 50}, %{})
+    :ok = Client.emit(:warn, %{},  %{}, %{})
+    {_, len} = Process.info(Process.whereis(Client), :message_queue_len)
+    assert len == 0
+    assert_receive {:api_request, _body}
+    assert_receive {:api_request, _body}
   end
 
   test "endpoint is down" do

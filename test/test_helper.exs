@@ -1,5 +1,6 @@
 Logger.configure(level: :info)
 Application.ensure_all_started(:hackney)
+Application.ensure_all_started(:sidejob)
 ExUnit.start()
 
 defmodule ExUnit.AirbaxCase do
@@ -11,8 +12,8 @@ defmodule ExUnit.AirbaxCase do
     end
   end
 
-  def start_airbax_client(project_key, project_id, env) do
-    Airbax.Client.start_link(project_key, project_id, env, true, "http://localhost:4004")
+  def start_airbax_client() do
+    Airbax.Client.start_link()
   end
 
   def ensure_airbax_client_down(pid) do
@@ -56,7 +57,14 @@ defmodule RollbarAPI do
     :timer.sleep(30)
     send test, {:api_request, body}
 
-    if get_in(Poison.decode!(body), ["params", "return_error?"]) do
+    body_json =Poison.decode!(body)
+    sleep_t = get_in(body_json, ["params", "sleep"])
+
+    if is_integer(sleep_t) && sleep_t > 0 do
+      Process.sleep(sleep_t)
+    end
+
+    if get_in(body_json, ["params", "return_error?"]) do
       send_resp(conn, 400, ~s({"err": 1, "message": "that was a bad request"}))
     else
       send_resp(conn, 201, "{}")

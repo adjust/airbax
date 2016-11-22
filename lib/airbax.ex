@@ -19,18 +19,7 @@ defmodule Airbax do
   @doc false
   def start(_type, _args) do
     import Supervisor.Spec
-
-    enabled = get_config(:enabled, true)
-
-    project_key = fetch_config(:project_key)
-    project_id = fetch_config(:project_id)
-    envt  = fetch_config(:environment)
-    url = get_config(:url, Airbax.Client.default_url)
-
-    children = [
-      worker(Airbax.Client, [project_key, project_id, envt, enabled, url])
-    ]
-
+    children = [ worker(Airbax.Client, []) ]
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 
@@ -101,15 +90,4 @@ defmodule Airbax do
     Airbax.Client.emit(:error, body, params, session)
   end
 
-  defp get_config(key, default) do
-    Application.get_env(:airbax, key, default)
-  end
-
-  defp fetch_config(key) do
-    case get_config(key, :not_found) do
-      :not_found ->
-        raise ArgumentError, "the configuration parameter #{inspect(key)} is not set"
-      value -> value
-    end
-  end
 end

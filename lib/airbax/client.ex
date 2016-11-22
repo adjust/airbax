@@ -22,9 +22,8 @@ defmodule Airbax.Client do
 
   ## Public API
 
-  def start_link(project_key, project_id, environment, enabled, url) do
-    state = new(project_key, project_id, environment, url, enabled)
-    GenServer.start_link(__MODULE__, state, [name: __MODULE__])
+  def start_link() do
+    GenServer.start_link(__MODULE__, [], [name: __MODULE__])
   end
 
   def emit(level, body, params, session) do
@@ -42,10 +41,16 @@ defmodule Airbax.Client do
 
   ## GenServer callbacks
 
-  def init(state) do
+  def init(_) do
+    enabled = get_config(:enabled, true)
+    project_key = fetch_config(:project_key)
+    project_id = fetch_config(:project_id)
+    envt = fetch_config(:environment)
+    url = get_config(:url, Airbax.Client.default_url)
+
     Logger.metadata(airbax: false)
     :ok = :hackney_pool.start_pool(__MODULE__, [max_connections: 20])
-    {:ok, state}
+    {:ok, new(project_key, project_id, envt, url, enabled)}
   end
 
   def terminate(_reason, _state) do
@@ -143,4 +148,17 @@ defmodule Airbax.Client do
     Logger.error("(Airbax) connection error: #{inspect(reason)}")
     %{state | hackney_responses: Map.delete(responses, ref)}
   end
+
+  defp get_config(key, default) do
+    Application.get_env(:airbax, key, default)
+  end
+
+  defp fetch_config(key) do
+    case get_config(key, :not_found) do
+      :not_found ->
+        raise ArgumentError, "the configuration parameter #{inspect(key)} is not set"
+      value -> value
+    end
+  end
+
 end

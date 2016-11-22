@@ -2,7 +2,7 @@ defmodule AirbaxTest do
   use ExUnit.AirbaxCase
 
   setup_all do
-    {:ok, pid} = start_airbax_client("project_key", "project_id", "test")
+    {:ok, pid} = start_airbax_client()
     on_exit(fn ->
       ensure_airbax_client_down(pid)
     end)
