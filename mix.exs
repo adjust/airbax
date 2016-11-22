@@ -20,13 +20,14 @@ defmodule Airbax.Mixfile do
   end
 
   def application() do
-    [applications: [:logger, :hackney, :poison],
+    [applications: [:logger, :hackney, :poison, :sidejob],
      mod: {Airbax, []}]
   end
 
   defp deps() do
     [{:hackney, "~> 1.1"},
      {:poison,  "~> 1.4 or ~> 2.0"},
+     {:sidejob, "~> 2.0"},
 
      {:ex_doc, ">= 0.0.0", only: :docs},
      {:earmark, ">= 0.0.0", only: :docs},

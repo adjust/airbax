@@ -1,13 +1,6 @@
 defmodule AirbaxTest do
   use ExUnit.AirbaxCase
 
-  setup_all do
-    {:ok, pid} = start_airbax_client("project_key", "project_id", "test")
-    on_exit(fn ->
-      ensure_airbax_client_down(pid)
-    end)
-  end
-
   setup do
     {:ok, _} = RollbarAPI.start(self())
     on_exit(&RollbarAPI.stop/0)

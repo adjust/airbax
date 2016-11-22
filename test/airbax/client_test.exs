@@ -3,13 +3,6 @@ defmodule Airbax.ClientTest do
 
   alias Airbax.Client
 
-  setup_all do
-    {:ok, pid} = start_airbax_client("project_key", "project_id", "test")
-    on_exit(fn ->
-      ensure_airbax_client_down(pid)
-    end)
-  end
-
   setup do
     {:ok, _} = RollbarAPI.start(self())
     on_exit(&RollbarAPI.stop/0)
@@ -29,6 +22,20 @@ defmodule Airbax.ClientTest do
     end
 
     for _ <- 1..60 do
+      assert_receive {:api_request, _body}
+    end
+  end
+
+  test "emit slow" do
+    n = Application.fetch_env!(:airbax, :overload_threshold) * 10
+
+    sent = Enum.take_while(1..n, fn _ ->
+      :ok == Client.emit(:warn, %{},  %{sleep: 50}, %{})
+    end)
+
+    assert length(sent) < n
+
+    for _ <- sent do
       assert_receive {:api_request, _body}
     end
   end
