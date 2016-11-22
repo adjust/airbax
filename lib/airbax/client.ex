@@ -17,7 +17,8 @@ defmodule Airbax.Client do
   @headers [{"content-type", "application/json"}]
 
   defmodule Regname do
-    # this module is needed because it'll be "rewritten" by sidejob
+    # this module is needed because a module that is
+    # used as a name is then "populated" by the sidejob
   end
 
   ## GenServer state

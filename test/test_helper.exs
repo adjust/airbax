@@ -1,6 +1,4 @@
 Logger.configure(level: :info)
-Application.ensure_all_started(:hackney)
-Application.ensure_all_started(:sidejob)
 ExUnit.start()
 
 defmodule ExUnit.AirbaxCase do
@@ -46,8 +44,8 @@ defmodule RollbarAPI do
     :timer.sleep(30)
     send test, {:api_request, body}
 
-    body_json =Poison.decode!(body)
-    sleep_t = get_in(body_json, ["params", "sleep"])
+    body_json = Poison.decode!(body)
+    sleep_t   = get_in(body_json, ["params", "sleep"])
 
     if is_integer(sleep_t) && sleep_t > 0 do
       Process.sleep(sleep_t)
