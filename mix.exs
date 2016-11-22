@@ -12,7 +12,6 @@ defmodule Airbax.Mixfile do
      description: description(),
      package: package(),
      deps: deps(),
-     aliases: [test: "test --no-start"],
      name: "Airbax",
      docs: [main: "Airbax",
             source_ref: "v#{@version}",

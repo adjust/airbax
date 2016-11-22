@@ -12,17 +12,6 @@ defmodule ExUnit.AirbaxCase do
     end
   end
 
-  def start_airbax_client() do
-    Airbax.Client.start_link()
-  end
-
-  def ensure_airbax_client_down(pid) do
-    ref = Process.monitor(pid)
-    receive do
-      {:DOWN, ^ref, _, _, _} -> :ok
-    end
-  end
-
   def capture_log(fun) do
     ExUnit.CaptureIO.capture_io(:user, fn ->
       fun.()

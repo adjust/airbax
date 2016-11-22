@@ -8,6 +8,7 @@ config :airbax,
   project_id:  "project_id",
   project_key: "project_key",
   environment: "test",
-  enabled:      true,
-  url:         "http://localhost:4004"
+  enabled:     true,
+  url:         "http://localhost:4004",
+  overload_threshold: 100
 

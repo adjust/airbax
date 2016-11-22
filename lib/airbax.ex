@@ -18,9 +18,9 @@ defmodule Airbax do
 
   @doc false
   def start(_type, _args) do
-    import Supervisor.Spec
-    children = [ worker(Airbax.Client, []) ]
-    Supervisor.start_link(children, strategy: :one_for_one)
+    # sidejob starts them under it's own supervisor
+    {:ok, _pid} = Airbax.Client.start_sidejob_resource()
+    Supervisor.start_link([], strategy: :one_for_one)
   end
 
   @doc """

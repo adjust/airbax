@@ -16,21 +16,25 @@ defmodule Airbax.Client do
   @default_url "https://airbrake.io"
   @headers [{"content-type", "application/json"}]
 
+  defmodule Regname do
+    # this module is needed because it'll be "rewritten" by sidejob
+  end
+
   ## GenServer state
 
   defstruct [:draft, :url, :enabled, hackney_responses: %{}]
 
   ## Public API
 
-  def start_link() do
-    GenServer.start_link(__MODULE__, [], [name: __MODULE__])
+  def start_sidejob_resource() do
+    limit = get_config(:overload_threshold, 500)
+    :sidejob.new_resource(__MODULE__.Regname, __MODULE__, limit)
   end
 
   def emit(level, body, params, session) do
-    if pid = Process.whereis(__MODULE__) do
-      event = {Atom.to_string(level), body, params, session}
-      GenServer.cast(pid, {:emit, event})
-    else
+    event = {Atom.to_string(level), body, params, session}
+    try do :sidejob.cast(__MODULE__.Regname, {:emit, event})
+    rescue ErlangError ->
       Logger.warn("(Airbax) Trying to report an exception but the :airbax application has not been started")
     end
   end
