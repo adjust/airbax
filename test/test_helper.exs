@@ -12,7 +12,7 @@ defmodule ExUnit.AirbaxCase do
   end
 
   def start_airbax_client(project_key, project_id, env) do
-    Airbax.Client.start_link(project_key, project_id, env, true, "http://localhost:4004")
+    Airbax.Client.start_link(project_key, project_id, env, true, "http://localhost:4004", [])
   end
 
   def ensure_airbax_client_down(pid) do

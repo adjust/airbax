@@ -18,12 +18,12 @@ defmodule Airbax.Client do
 
   ## GenServer state
 
-  defstruct [:draft, :url, :enabled, hackney_responses: %{}]
+  defstruct [:draft, :url, :enabled, hackney_opts: [], hackney_responses: %{}]
 
   ## Public API
 
-  def start_link(project_key, project_id, environment, enabled, url) do
-    state = new(project_key, project_id, environment, url, enabled)
+  def start_link(project_key, project_id, environment, enabled, url, hackney_opts) do
+    state = new(project_key, project_id, environment, enabled, url, hackney_opts)
     GenServer.start_link(__MODULE__, state, [name: __MODULE__])
   end
 
@@ -67,9 +67,10 @@ defmodule Airbax.Client do
     {:noreply, state}
   end
 
-  def handle_cast({:emit, event}, %{enabled: true} = state) do
+  def handle_cast({:emit, event}, %{enabled: true, hackney_opts: hackney_opts} = state) do
     payload = compose_json(state.draft, event)
-    opts = [:async, pool: __MODULE__]
+    opts = [:async, {:pool, __MODULE__} | hackney_opts]
+
     case :hackney.post(state.url, @headers, payload, opts) do
       {:ok, _ref} -> :ok
       {:error, reason} ->
@@ -90,11 +91,11 @@ defmodule Airbax.Client do
 
   ## Helper functions
 
-  defp new(project_key, project_id, environment, url, enabled) do
+  defp new(project_key, project_id, environment, enabled, url, hackney_opts) do
     draft = Item.draft(environment)
     url = build_url(project_key, project_id, url)
 
-    %__MODULE__{draft: draft, url: url, enabled: enabled}
+    %__MODULE__{draft: draft, url: url, hackney_opts: hackney_opts, enabled: enabled}
   end
 
   defp build_url(project_key, project_id, url) do

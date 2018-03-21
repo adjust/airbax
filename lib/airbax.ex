@@ -12,7 +12,8 @@ defmodule Airbax do
         project_key: {:system, "AIRBRAKE_PROJECT_KEY"},
         project_id: {:system, "AIRBRAKE_PROJECT_ID"},
         environment: "production",
-        ignore: [Phoenix.Router.NoRouteError] # optional, can be set to `:all`
+        ignore: [Phoenix.Router.NoRouteError], # optional, can be set to `:all`
+        hackney_opts: [proxy: {"localhost", 8080}]
   """
 
   use Application
@@ -27,9 +28,10 @@ defmodule Airbax do
     project_id = fetch_config(:project_id)
     envt  = fetch_config(:environment)
     url = get_config(:url, Airbax.Client.default_url)
+    hackney_opts = get_config(:hackney_opts, [])
 
     children = [
-      worker(Airbax.Client, [project_key, project_id, envt, enabled, url])
+      worker(Airbax.Client, [project_key, project_id, envt, enabled, url, hackney_opts])
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)
